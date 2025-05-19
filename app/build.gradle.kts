@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.practicaltrainingproject"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.practicaltrainingproject"
@@ -42,9 +42,14 @@ android {
 
 
 dependencies {
-    // Vico Library
-    implementation(libs.vico.compose)
-    
+    val vicoVersion = "1.16.1"
+    implementation("com.patrykandpatrick.vico:core:$vicoVersion")
+    implementation("com.patrykandpatrick.vico:compose:$vicoVersion")
+    // For Material 2 theming in Jetpack Compose.
+    implementation("com.patrykandpatrick.vico:compose-m2:$vicoVersion")
+    // For Material 3 theming in Jetpack Compose.
+    implementation("com.patrykandpatrick.vico:compose-m3:$vicoVersion")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
