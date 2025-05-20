@@ -42,7 +42,7 @@ android {
 
 
 dependencies {
-    val vicoVersion = "1.16.1"
+    val vicoVersion = "2.1.2"
     implementation("com.patrykandpatrick.vico:core:$vicoVersion")
     implementation("com.patrykandpatrick.vico:compose:$vicoVersion")
     // For Material 2 theming in Jetpack Compose.
