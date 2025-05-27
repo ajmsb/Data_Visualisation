@@ -34,7 +34,7 @@ private val StartAxisValueFormatter = CartesianValueFormatter.decimal(YDecimalFo
 private val MarkerValueFormatter = DefaultCartesianMarker.ValueFormatter.default(YDecimalFormat)
 
 @Composable
-private fun LineChart(
+internal fun LineChart(
     modelProducer: CartesianChartModelProducer,
     modifier: Modifier = Modifier,
 ) {

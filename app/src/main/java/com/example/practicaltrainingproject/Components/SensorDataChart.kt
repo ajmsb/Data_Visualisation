@@ -20,9 +20,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -31,6 +35,19 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
+import com.patrykandpatrick.vico.compose.common.fill
+import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
+import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
+import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
 import kotlin.math.max
 
 @Composable
@@ -98,7 +115,7 @@ fun SensorDataChart() {
             .fillMaxSize()
     ) {
         Text(
-            "Accelerometer Readings",
+            "Accelerometer Readings ",
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.primary
         )
@@ -108,15 +125,35 @@ fun SensorDataChart() {
         Text("Z: $z", color = MaterialTheme.colorScheme.primary)
         Spacer(modifier = Modifier.height(24.dp))
 
+        Text(
+            "Canvas Charts",
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
         AxisChart(title = "X Axis", color = Color.Red, data = xData)
         Spacer(modifier = Modifier.height(16.dp))
         AxisChart(title = "Y Axis", color = Color.Green, data = yData)
         Spacer(modifier = Modifier.height(16.dp))
         AxisChart(title = "Z Axis", color = Color.Blue, data = zData)
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            "Vico 2.1.2 Charts",
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        LiveAxisChart("X Axis", xData, Color.Red)
+        Spacer(modifier = Modifier.height(8.dp))
+        LiveAxisChart("Y Axis", yData, Color.Green)
+        Spacer(modifier = Modifier.height(8.dp))
+        LiveAxisChart("Z Axis", zData, Color.Blue)
     }
 }
 
-// Charts Composable
+// Canvas Charts Composable
 @Composable
 fun AxisChart(
     title: String,
@@ -128,6 +165,7 @@ fun AxisChart(
     val minY = -15f
 
     Column(modifier = modifier.fillMaxWidth()) {
+
         Text(title, style = MaterialTheme.typography.bodyLarge)
         Spacer(modifier = Modifier.height(4.dp))
         Canvas(
@@ -163,7 +201,76 @@ fun AxisChart(
 }
 
 
+// Vico Chart Composable
+@Composable
+fun LiveAxisChart(
+    title: String,
+    data: List<Float>,
+    color: Color,
+    modifier: Modifier = Modifier
+) {
 
+    val modelProducer = remember { CartesianChartModelProducer() }
+
+
+    var lastUpdate by remember { mutableLongStateOf(0L) }
+
+
+    val chartData by remember(data) {
+        derivedStateOf {
+            data.takeLast(100)
+        }
+    }
+
+    LaunchedEffect(chartData) {
+
+        if (chartData.isNotEmpty() && System.currentTimeMillis() - lastUpdate > 50) {
+            try {
+                modelProducer.runTransaction {
+                    lineSeries {
+                        series(
+                            x = chartData.indices.map { it.toFloat() },
+                            y = chartData
+                        )
+                    }
+                }
+                lastUpdate = System.currentTimeMillis()
+            } catch (e: Exception) {
+                Log.e("LiveAxisChart", "Error updating chart", e)
+            }
+        }
+    }
+
+    Column(modifier = modifier) {
+        Text(title, style = MaterialTheme.typography.bodyLarge)
+
+        CartesianChartHost(
+            chart = rememberCartesianChart(
+                rememberLineCartesianLayer(
+                    lineProvider = LineCartesianLayer.LineProvider.series(
+                        LineCartesianLayer.rememberLine(
+                            fill = LineCartesianLayer.LineFill.single(fill(color)),
+                            areaFill =
+                                LineCartesianLayer.AreaFill.single(
+                                    fill(
+                                        Color.LightGray
+                                    )
+                                ),
+                        )
+                    )
+                ),
+                bottomAxis = HorizontalAxis.rememberBottom(),
+                startAxis = VerticalAxis.rememberStart()
+            ),
+            modelProducer,
+            modifier.height(120.dp),
+            rememberVicoScrollState(scrollEnabled = false),
+        )
+    }
+}
+
+
+//Preview
 @Preview(showBackground = true)
 @Composable
 private fun PrevSensorData() {

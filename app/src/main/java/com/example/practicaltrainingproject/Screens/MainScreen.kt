@@ -50,12 +50,12 @@ fun MainScreen() {
                 .padding(horizontal = 10.dp)
         ) {
             item {
-                Text("Calories Chart")
+                Spacer(modifier = Modifier.width(10.dp))
+                SensorDataChart()
+                Spacer(modifier = Modifier.width(10.dp))
                 LineChart(modifier = Modifier.padding(10.dp))
                 Spacer(modifier = Modifier.width(10.dp))
                 BarChart(modifier = Modifier.padding(10.dp))
-                Spacer(modifier = Modifier.width(10.dp))
-                SensorDataChart()
             }
 
 

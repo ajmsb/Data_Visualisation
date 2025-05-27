@@ -49,6 +49,13 @@ dependencies {
     implementation("com.patrykandpatrick.vico:compose-m2:$vicoVersion")
     // For Material 3 theming in Jetpack Compose.
     implementation("com.patrykandpatrick.vico:compose-m3:$vicoVersion")
+    val vicoVersion1 = "1.16.1"
+    implementation("com.patrykandpatrick.vico:core:$vicoVersion1")
+    implementation("com.patrykandpatrick.vico:compose:$vicoVersion1")
+    // For Material 2 theming in Jetpack Compose.
+    implementation("com.patrykandpatrick.vico:compose-m2:$vicoVersion1")
+    // For Material 3 theming in Jetpack Compose.
+    implementation("com.patrykandpatrick.vico:compose-m3:$vicoVersion1")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
