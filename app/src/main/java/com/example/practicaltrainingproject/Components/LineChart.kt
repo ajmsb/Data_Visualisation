@@ -1,4 +1,4 @@
-package com.example.practicaltrainingproject
+package com.example.practicaltrainingproject.Components
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
@@ -34,7 +34,7 @@ private val StartAxisValueFormatter = CartesianValueFormatter.decimal(YDecimalFo
 private val MarkerValueFormatter = DefaultCartesianMarker.ValueFormatter.default(YDecimalFormat)
 
 @Composable
-private fun NutritionChart(
+private fun LineChart(
     modelProducer: CartesianChartModelProducer,
     modifier: Modifier = Modifier,
 ) {
@@ -70,7 +70,7 @@ private val x = (2010..2023).toList()
 private val y = listOf<Number>(0.28, 1.4, 3.1, 5.8, 15, 22, 29, 39, 49, 56, 75, 86, 89, 93)
 
 @Composable
-fun NutritionChart(modifier: Modifier = Modifier) {
+fun LineChart(modifier: Modifier = Modifier) {
     val modelProducer = remember { CartesianChartModelProducer() }
     LaunchedEffect(Unit) {
         modelProducer.runTransaction {
@@ -78,7 +78,7 @@ fun NutritionChart(modifier: Modifier = Modifier) {
             lineSeries { series(x, y) }
         }
     }
-    NutritionChart(modelProducer, modifier)
+    LineChart(modelProducer, modifier)
 }
 
 @Composable
@@ -92,5 +92,5 @@ private fun Preview() {
             lineSeries { series(x, y) }
         }
     }
-    NutritionChart(modelProducer)
+    LineChart(modelProducer)
 }

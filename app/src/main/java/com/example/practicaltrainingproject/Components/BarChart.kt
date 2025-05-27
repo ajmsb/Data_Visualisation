@@ -1,4 +1,4 @@
-package com.example.practicaltrainingproject
+package com.example.practicaltrainingproject.Components
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
@@ -45,7 +45,7 @@ private val StartAxisItemPlacer = VerticalAxis.ItemPlacer.step({ 0.5 })
 private val MarkerValueFormatter = DefaultCartesianMarker.ValueFormatter.default(YDecimalFormat)
 
 @Composable
-private fun JetpackComposeDailyNutritionUsage(
+private fun BarChart(
     modelProducer: CartesianChartModelProducer,
     modifier: Modifier = Modifier,
 ) {
@@ -107,7 +107,7 @@ private val y =
     )
 
 @Composable
-fun JetpackComposeDailyNutritionUsage(modifier: Modifier = Modifier) {
+fun BarChart(modifier: Modifier = Modifier) {
     val modelProducer = remember { CartesianChartModelProducer() }
     LaunchedEffect(Unit) {
         modelProducer.runTransaction {
@@ -115,5 +115,5 @@ fun JetpackComposeDailyNutritionUsage(modifier: Modifier = Modifier) {
             extras { it[LegendLabelKey] = y.keys }
         }
     }
-    JetpackComposeDailyNutritionUsage(modelProducer, modifier)
+    BarChart(modelProducer, modifier)
 }
