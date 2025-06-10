@@ -1,4 +1,4 @@
-package com.example.practicaltrainingproject.Components
+package com.example.practicaltrainingproject.presentation.ui.mainScreen.components
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable

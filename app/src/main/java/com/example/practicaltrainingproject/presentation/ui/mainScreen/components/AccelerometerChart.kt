@@ -1,4 +1,4 @@
-package com.example.practicaltrainingproject.Components
+package com.example.practicaltrainingproject.presentation.ui.mainScreen.components
 
 import android.content.Context
 import android.hardware.Sensor
@@ -26,14 +26,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
@@ -49,9 +48,10 @@ import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
 import kotlin.math.max
+import kotlin.math.sqrt
 
 @Composable
-fun SensorDataChart() {
+fun AccelerometerChart() {
 
     val context = LocalContext.current
     val sensorManager = remember {
@@ -90,7 +90,16 @@ fun SensorDataChart() {
                     if (yData.size > maxPoints) yData.removeFirst()
                     if (zData.size > maxPoints) zData.removeFirst()
 
-                    Log.d("Accelerometer", "X: $x, Y: $y, Z: $z")
+                    //Log.d("Accelerometer", "X: $x, Y: $y, Z: $z")
+                    val totalAcc = sqrt(x * x + y * y + z * z) / 10
+                    //Log.v("IMPACT", "⚠️ Impact detected: ${"%.2f".format(totalAcc)}g")
+                    if (totalAcc > 2.5f) {
+                        Log.w("IMPACT", "⚠️ Impact detected: ${"%.2f".format(totalAcc)}g")
+                    } else {
+                        // Log normal reading (optional)
+                        Log.v("SENSOR", "Normal reading: ${"%.2f".format(totalAcc)}g")
+                    }
+
                 }
             }
 
@@ -139,17 +148,17 @@ fun SensorDataChart() {
         AxisChart(title = "Z Axis", color = Color.Blue, data = zData)
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            "Vico 2.1.2 Charts",
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.primary
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        LiveAxisChart("X Axis", xData, Color.Red)
-        Spacer(modifier = Modifier.height(8.dp))
-        LiveAxisChart("Y Axis", yData, Color.Green)
-        Spacer(modifier = Modifier.height(8.dp))
-        LiveAxisChart("Z Axis", zData, Color.Blue)
+//        Text(
+//            "Vico 2.1.2 Charts",
+//            style = MaterialTheme.typography.headlineSmall,
+//            color = MaterialTheme.colorScheme.primary
+//        )
+//        Spacer(modifier = Modifier.height(16.dp))
+//        LiveAxisChart("X Axis", xData, Color.Red)
+//        Spacer(modifier = Modifier.height(8.dp))
+//        LiveAxisChart("Y Axis", yData, Color.Green)
+//        Spacer(modifier = Modifier.height(8.dp))
+//        LiveAxisChart("Z Axis", zData, Color.Blue)
     }
 }
 
@@ -193,7 +202,7 @@ fun AxisChart(
                 drawPath(
                     path = path,
                     color = color,
-                    style = androidx.compose.ui.graphics.drawscope.Stroke(width = 4f)
+                    style = Stroke(width = 4f)
                 )
             }
         }
@@ -269,10 +278,3 @@ fun LiveAxisChart(
     }
 }
 
-
-//Preview
-@Preview(showBackground = true)
-@Composable
-private fun PrevSensorData() {
-    SensorDataChart()
-}
