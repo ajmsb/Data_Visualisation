@@ -1,4 +1,4 @@
-package com.example.practicaltrainingproject.presentation.ui.mainScreen.components
+package com.example.practicaltrainingproject.presentation.ui.mainScreen.Components
 
 import android.content.Context
 import android.hardware.Sensor
@@ -25,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import kotlin.math.max
@@ -129,7 +130,7 @@ fun AxisCanvasChart(title: String, data: List<Float>, color: Color) {
                     }
                 }
 
-                drawPath(path, color = color, style = androidx.compose.ui.graphics.drawscope.Stroke(4f))
+                drawPath(path, color = color, style = Stroke(4f))
             }
         }
     }

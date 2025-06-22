@@ -1,4 +1,4 @@
-package com.example.practicaltrainingproject.presentation.ui.mainScreen.components
+package com.example.practicaltrainingproject.presentation.ui.mainScreen.Components
 
 import android.content.Context
 import android.hardware.Sensor
@@ -72,7 +72,7 @@ fun AccelerometerChart() {
 
     val maxPoints = 100
 
-    // SensorEventListener lifecycle-aware
+    // SensorEventListener
     DisposableEffect(Unit) {
         val listener = object : SensorEventListener {
             @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
@@ -91,6 +91,7 @@ fun AccelerometerChart() {
                     if (zData.size > maxPoints) zData.removeFirst()
 
                     //Log.d("Accelerometer", "X: $x, Y: $y, Z: $z")
+                    //Calculating total acceleration
                     val totalAcc = sqrt(x * x + y * y + z * z) / 10
                     //Log.v("IMPACT", "⚠️ Impact detected: ${"%.2f".format(totalAcc)}g")
                     if (totalAcc > 2.5f) {

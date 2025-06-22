@@ -29,8 +29,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
-import com.example.practicaltrainingproject.presentation.ui.mainScreen.components.AccelerometerChart
-import com.example.practicaltrainingproject.presentation.ui.mainScreen.components.GyroscopeChart
+import com.example.practicaltrainingproject.presentation.ui.mainScreen.Components.AccelerometerChart
+import com.example.practicaltrainingproject.presentation.ui.mainScreen.Components.GyroscopeChart
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,8 +71,6 @@ fun MainScreen() {
                 //Spacer(modifier = Modifier.width(10.dp))
                 //BarChart(modifier = Modifier.padding(10.dp))
             }
-
-
         }
     }
 
@@ -82,7 +80,7 @@ fun MainScreen() {
 fun FallHistoryBarChart() {
     // Sample data - falls per day (0-7)
     val fallData = mapOf(
-        "Mon" to 20,
+        "Mon" to 3,
         "Tue" to 5,
         "Wed" to 2,
         "Thu" to 7,
