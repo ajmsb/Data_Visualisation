@@ -26,4 +26,12 @@ class WeeklyImpactStore(private val context: Context) {
             prefs[keys[day]!!] = newValue
         }
     }
+
+    suspend fun saveWeeklyData(data: WeeklyImpactData) {
+        context.dataStore.edit { prefs ->
+            data.counts.forEach { (day, value) ->
+                prefs[keys[day]!!] = value
+            }
+        }
+    }
 }

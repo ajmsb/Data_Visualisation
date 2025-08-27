@@ -1,6 +1,7 @@
-package com.example.practicaltrainingproject.presentation.ui.mainScreen.Components
+package com.example.practicaltrainingproject.presentation.ui.mainScreen.Unused
 
 import android.content.Context
+import android.graphics.Paint
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -10,20 +11,17 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -33,18 +31,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.practicaltrainingproject.data.local.WeeklyImpactData
 import com.example.practicaltrainingproject.data.model.WeeklyImpactStore
+import com.example.practicaltrainingproject.presentation.ui.mainScreen.Components.WeeklyImpactChartFromState
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
@@ -59,12 +56,13 @@ import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import kotlin.math.max
 import kotlin.math.sqrt
 
 
 @Composable
-fun AccelerometerChart() {
+fun AccelerometerCharts() {
 
     val context = LocalContext.current
     val sensorManager = remember {
@@ -105,6 +103,7 @@ fun AccelerometerChart() {
 
     // SensorEventListener
     DisposableEffect(Unit) {
+        val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
         val listener = object : SensorEventListener {
             @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
             override fun onSensorChanged(event: SensorEvent?) {
@@ -121,41 +120,31 @@ fun AccelerometerChart() {
                     if (yData.size > maxPoints) yData.removeFirst()
                     if (zData.size > maxPoints) zData.removeFirst()
 
-                    //Log.d("Accelerometer", "X: $x, Y: $y, Z: $z")
                     //Calculating total acceleration
                     val totalAcc = sqrt(x * x + y * y + z * z) / 10
-                    //Log.v("IMPACT", "⚠️ Impact detected: ${"%.2f".format(totalAcc)}g")
-                    if (totalAcc > 2.5f) {
+                    // Get user-defined threshold
+                    val threshold = prefs.getFloat("sensitivity_threshold", 5f)
+                    if (totalAcc > threshold) {
                         Log.w("IMPACT", "⚠️ Impact detected: ${"%.2f".format(totalAcc)}g")
-                        // Figure out which day of week (0=Mon, 6=Sun)
-//                        val dayIndex = java.time.LocalDate.now()
-//                            .dayOfWeek.value % 7  // Mon=1 → 1%7=1, Sun=7 → 0
-//                        dailyImpactCounts[dayIndex] = dailyImpactCounts[dayIndex] + 1
-                        val today = java.time.LocalDate.now().dayOfWeek.value % 7 // Mon=1 → index 0
-                        // Update local state immediately
+                        val today = LocalDate.now().dayOfWeek.value % 7 // Mon=1 → index 0
                         dailyImpactCounts[today] = dailyImpactCounts[today] + 1
-                        // Persist asynchronously
                         scope.launch {
-                            store.updateDayCount(days[today], dailyImpactCounts[today])
+                            store.saveWeeklyData(WeeklyImpactData(
+                                counts = days.zip(dailyImpactCounts).toMap()
+                            ))
                         }
-
                     } else {
-                        // Log normal reading (optional)
                         Log.v("SENSOR", "Normal reading: ${"%.2f".format(totalAcc)}g")
                     }
-
                 }
             }
-
             override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
         }
-
         sensorManager.registerListener(
             listener,
             accelerometer,
             SensorManager.SENSOR_DELAY_GAME
         )
-
         onDispose {
             sensorManager.unregisterListener(listener)
         }
@@ -168,7 +157,7 @@ fun AccelerometerChart() {
             .padding(16.dp)
     ) {
         Text(
-            text = "Accelerometer Readings ",
+            text = "Sensor Readings ",
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.primary
         )
@@ -207,7 +196,7 @@ fun AccelerometerChart() {
 
 
 
-
+/*
 @Composable
 fun WeeklyImpactChart(store: WeeklyImpactStore) {
     val weeklyData by store.weeklyData.collectAsState(
@@ -260,7 +249,7 @@ fun WeeklyImpactChart(store: WeeklyImpactStore) {
     }
 }
 
-
+*/
 
 
 // Canvas BAR CHart
@@ -292,8 +281,8 @@ fun DailyImpactChart(
                 // Draw bar
                 drawRect(
                     color = Color(0xFF3490DE),
-                    topLeft = androidx.compose.ui.geometry.Offset(left, top),
-                    size = androidx.compose.ui.geometry.Size(barWidth, barHeight)
+                    topLeft = Offset(left, top),
+                    size = Size(barWidth, barHeight)
                 )
 
                 // Draw label under bar
@@ -304,7 +293,7 @@ fun DailyImpactChart(
                         days[index],
                         left + barWidth / 4,
                         size.height - 5,
-                        android.graphics.Paint().apply {
+                        Paint().apply {
                             textSize = 28f
                             color = android.graphics.Color.BLACK
                         }
@@ -431,4 +420,3 @@ fun LiveAxisChart(
         )
     }
 }
-

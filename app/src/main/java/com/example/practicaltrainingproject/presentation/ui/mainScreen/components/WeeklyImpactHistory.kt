@@ -25,7 +25,7 @@ fun WeeklyImpactChartFromState(days: List<String>, dailyImpactCounts: List<Int>)
 
     Box(
         modifier = Modifier
-            .padding(10.dp)
+
             .background(Color.White, RoundedCornerShape(8.dp))
             .padding(10.dp)
     ) {

@@ -1,4 +1,4 @@
-package com.example.practicaltrainingproject.presentation.ui.mainScreen.Components
+package com.example.practicaltrainingproject.presentation.ui.mainScreen.Unused
 
 import android.content.Context
 import android.hardware.Sensor
@@ -32,7 +32,7 @@ import kotlin.math.max
 
 
 @Composable
-fun GyroscopeChart() {
+fun GyroscopeCharts() {
 
     val context = LocalContext.current
     val sensorManager = remember {

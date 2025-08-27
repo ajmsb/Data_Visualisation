@@ -1,5 +1,6 @@
-package com.example.practicaltrainingproject.presentation.ui.mainScreen.Components
+package com.example.practicaltrainingproject.presentation.ui.mainScreen.Unused
 
+import android.graphics.Paint
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -70,11 +71,11 @@ fun FallHistoryBarChart() {
                 chartTitle,
                 titleX,
                 titleY,
-                android.graphics.Paint().apply {
+                Paint().apply {
                     color = textColor.toArgb()
                     textSize = 36f
                     isFakeBoldText = true
-                    textAlign = android.graphics.Paint.Align.CENTER
+                    textAlign = Paint.Align.CENTER
                 }
             )
 
@@ -94,10 +95,10 @@ fun FallHistoryBarChart() {
                         i.toString(),
                         5f, // aligned left
                         yPos + 8f, // vertical centering tweak
-                        android.graphics.Paint().apply {
+                        Paint().apply {
                             color = textColor.toArgb()
                             textSize = 24f
-                            textAlign = android.graphics.Paint.Align.LEFT
+                            textAlign = Paint.Align.LEFT
                         }
                     )
                 }
@@ -123,10 +124,10 @@ fun FallHistoryBarChart() {
                         falls.toString(),
                         barLeft + barWidth / 2,
                         barTop - 10,
-                        android.graphics.Paint().apply {
+                        Paint().apply {
                             color = textColor.toArgb()
                             textSize = 24f
-                            textAlign = android.graphics.Paint.Align.CENTER
+                            textAlign = Paint.Align.CENTER
                         }
                     )
                 }
@@ -137,10 +138,10 @@ fun FallHistoryBarChart() {
                         day,
                         barLeft + barWidth / 2,
                         dayLabelY,
-                        android.graphics.Paint().apply {
+                        Paint().apply {
                             color = textColor.toArgb()
                             textSize = 24f
-                            textAlign = android.graphics.Paint.Align.CENTER
+                            textAlign = Paint.Align.CENTER
                         }
                     )
                 }
