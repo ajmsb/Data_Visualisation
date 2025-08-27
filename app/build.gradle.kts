@@ -57,6 +57,8 @@ dependencies {
     // For Material 3 theming in Jetpack Compose.
     implementation("com.patrykandpatrick.vico:compose-m3:$vicoVersion1")
 
+
+    implementation ("androidx.datastore:datastore-preferences:1.1.1")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

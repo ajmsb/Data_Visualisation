@@ -33,6 +33,7 @@ import kotlin.math.max
 
 @Composable
 fun GyroscopeChart() {
+
     val context = LocalContext.current
     val sensorManager = remember {
         context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -45,12 +46,14 @@ fun GyroscopeChart() {
     var y by remember { mutableFloatStateOf(0f) }
     var z by remember { mutableFloatStateOf(0f) }
 
+    // Buffers to hold chart points
     val xData = remember { mutableStateListOf<Float>() }
     val yData = remember { mutableStateListOf<Float>() }
     val zData = remember { mutableStateListOf<Float>() }
 
     val maxPoints = 100
 
+    // SensorEventListener
     DisposableEffect(Unit) {
         val listener = object : SensorEventListener {
             override fun onSensorChanged(event: SensorEvent?) {
@@ -81,18 +84,22 @@ fun GyroscopeChart() {
         }
     }
 
+    // UI Layout
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text("Gyroscope Readings", style = MaterialTheme.typography.headlineSmall)
-        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Gyroscope Readings",
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.height(16.dp))
         Text("X: $x", color = Color.Red)
         Text("Y: $y", color = Color.Green)
         Text("Z: $z", color = Color.Blue)
         Spacer(modifier = Modifier.height(16.dp))
-
         AxisCanvasChart("X Axis", xData, Color.Red)
         Spacer(modifier = Modifier.height(8.dp))
         AxisCanvasChart("Y Axis", yData, Color.Green)
@@ -101,8 +108,13 @@ fun GyroscopeChart() {
     }
 }
 
+// Canvas Charts Composable
 @Composable
-fun AxisCanvasChart(title: String, data: List<Float>, color: Color) {
+fun AxisCanvasChart(
+    title: String,
+    data: List<Float>,
+    color: Color
+) {
     val maxY = 10f
     val minY = -10f
 
