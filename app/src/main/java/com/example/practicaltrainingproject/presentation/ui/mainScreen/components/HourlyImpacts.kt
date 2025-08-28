@@ -1,4 +1,4 @@
-package com.example.practicaltrainingproject.presentation.ui.mainScreen.Components
+package com.example.practicaltrainingproject.presentation.ui.mainScreen.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -44,6 +44,21 @@ fun HourlyImpactChartFromState(hours: List<String>, hourlyImpactCounts: List<Int
             val leftPadding = 40f // space for Y labels
             val chartHeight = canvasHeight - bottomPadding
             val chartWidth = canvasWidth - leftPadding
+            // Title
+            val chartTitle = "Hourly Impact History"
+            val titleX = canvasWidth / 2
+            val titleY = 20f
+            drawContext.canvas.nativeCanvas.drawText(
+                chartTitle,
+                titleX,
+                titleY,
+                android.graphics.Paint().apply {
+                    color = textColor.toArgb()
+                    textSize = 36f
+                    isFakeBoldText = true
+                    textAlign = android.graphics.Paint.Align.CENTER
+                }
+            )
 
             // Draw Y axis
             drawLine(
@@ -128,4 +143,3 @@ fun HourlyImpactChartFromState(hours: List<String>, hourlyImpactCounts: List<Int
         }
     }
 }
-

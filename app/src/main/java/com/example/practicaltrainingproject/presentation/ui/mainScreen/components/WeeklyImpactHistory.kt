@@ -1,4 +1,4 @@
-package com.example.practicaltrainingproject.presentation.ui.mainScreen.Components
+package com.example.practicaltrainingproject.presentation.ui.mainScreen.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
