@@ -1,10 +1,18 @@
 package com.example.practicaltrainingproject.presentation.ui.mainScreen.components
 
+import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
+import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.media.RingtoneManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -25,6 +33,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -58,6 +67,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.core.content.ContextCompat
+import androidx.core.app.NotificationCompat
 
 @Composable
 fun SensorChartsSharedState() {
@@ -76,6 +87,47 @@ fun SensorChartsSharedState() {
         remember { context.getSystemService(Context.SENSOR_SERVICE) as SensorManager }
     val accelerometer = remember { sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) }
     val gyroscope = remember { sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) }
+
+    // Helper to send notification and play ringtone
+    fun sendImpactNotification() {
+        val channelId = "impact_channel"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                channelId,
+                "Impact Alerts",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            val notificationManager = ContextCompat.getSystemService(context, NotificationManager::class.java)
+            notificationManager?.createNotificationChannel(channel)
+        }
+        val notificationBuilder = NotificationCompat.Builder(context, channelId)
+            .setSmallIcon(android.R.drawable.ic_dialog_alert)
+            .setContentTitle("Warning!")
+            .setContentText("Detected Fall Impact!")
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+        val notificationManager = ContextCompat.getSystemService(context, NotificationManager::class.java)
+        // Only post notification if permission is granted
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+            notificationManager?.notify(1001, notificationBuilder.build())
+        }
+    }
+
+    // Notification permission launcher (Android 13+)
+    var pendingNotification by remember { mutableStateOf(false) }
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted && pendingNotification) {
+            sendImpactNotification()
+            pendingNotification = false
+        }
+    }
+    val hasNotificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+    } else true
 
     // Shared state
     var accX by remember { mutableFloatStateOf(0f) }
@@ -140,6 +192,13 @@ fun SensorChartsSharedState() {
                     val threshold = prefs.getFloat("sensitivity_threshold", 5f)
                     if (totalAcc > threshold) {
                         viewModel.addImpactValue(totalAcc)
+                        // Notification and ringtone
+                        if (hasNotificationPermission) {
+                            sendImpactNotification()
+                        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            pendingNotification = true
+                            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        }
                         val today = java.time.LocalDate.now().dayOfWeek.value - 1 // Monday=0, Sunday=6
                         dailyImpactCounts[today] = dailyImpactCounts[today] + 1
                         val currentHour = LocalTime.now().hour
