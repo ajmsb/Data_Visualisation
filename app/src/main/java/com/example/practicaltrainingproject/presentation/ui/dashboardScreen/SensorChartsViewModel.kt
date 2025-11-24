@@ -1,4 +1,4 @@
-package com.example.practicaltrainingproject.presentation.ui.mainScreen.components
+package com.example.practicaltrainingproject.presentation.ui.dashboardScreen
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -9,7 +9,8 @@ import org.json.JSONArray
 
 class SensorChartsViewModel(private val context: Context) : ViewModel() {
     val impactSensitivityHistory = mutableStateListOf<Float>()
-    private val prefs: SharedPreferences = context.getSharedPreferences("impact_chart_prefs", Context.MODE_PRIVATE)
+    private val prefs: SharedPreferences =
+        context.getSharedPreferences("impact_chart_prefs", Context.MODE_PRIVATE)
     private val key = "impactSensitivityHistory"
 
     init {

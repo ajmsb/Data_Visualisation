@@ -1,10 +1,12 @@
 package com.example.practicaltrainingproject.presentation.ui.mainScreen.components
 
 import android.Manifest
+import android.R
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Paint
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -22,6 +24,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,42 +36,42 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.practicaltrainingproject.data.local.HourlyImpactData
 import com.example.practicaltrainingproject.data.local.WeeklyImpactData
 import com.example.practicaltrainingproject.data.model.HourlyImpactStore
 import com.example.practicaltrainingproject.data.model.WeeklyImpactStore
+import com.example.practicaltrainingproject.presentation.ui.dashboardScreen.SensorChartsViewModel
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
-import com.patrykandpatrick.vico.compose.common.fill
 import com.patrykandpatrick.vico.compose.common.component.rememberTextComponent
+import com.patrykandpatrick.vico.compose.common.fill
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
 import com.patrykandpatrick.vico.core.cartesian.marker.CartesianMarker
 import com.patrykandpatrick.vico.core.cartesian.marker.DefaultCartesianMarker
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.time.LocalTime
 import kotlin.math.sqrt
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.nativeCanvas
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.core.content.ContextCompat
-import androidx.core.app.NotificationCompat
 
 @Composable
 fun SensorChartsSharedState() {
@@ -97,20 +100,26 @@ fun SensorChartsSharedState() {
                 "Impact Alerts",
                 NotificationManager.IMPORTANCE_HIGH
             )
-            val notificationManager = ContextCompat.getSystemService(context, NotificationManager::class.java)
+            val notificationManager =
+                ContextCompat.getSystemService(context, NotificationManager::class.java)
             notificationManager?.createNotificationChannel(channel)
         }
         val notificationBuilder = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(android.R.drawable.ic_dialog_alert)
+            .setSmallIcon(R.drawable.ic_dialog_alert)
             .setContentTitle("Warning!")
             .setContentText("Detected Fall Impact!")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-        val notificationManager = ContextCompat.getSystemService(context, NotificationManager::class.java)
+        val notificationManager =
+            ContextCompat.getSystemService(context, NotificationManager::class.java)
         // Only post notification if permission is granted
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
-            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             notificationManager?.notify(1001, notificationBuilder.build())
         }
     }
@@ -126,7 +135,10 @@ fun SensorChartsSharedState() {
         }
     }
     val hasNotificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+        ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.POST_NOTIFICATIONS
+        ) == PackageManager.PERMISSION_GRANTED
     } else true
 
     // Shared state
@@ -199,7 +211,7 @@ fun SensorChartsSharedState() {
                             pendingNotification = true
                             notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                         }
-                        val today = java.time.LocalDate.now().dayOfWeek.value - 1 // Monday=0, Sunday=6
+                        val today = LocalDate.now().dayOfWeek.value - 1 // Monday=0, Sunday=6
                         dailyImpactCounts[today] = dailyImpactCounts[today] + 1
                         val currentHour = LocalTime.now().hour
                         hourlyImpactCounts[currentHour] = hourlyImpactCounts[currentHour] + 1
@@ -278,9 +290,11 @@ fun SensorChartsSharedState() {
         }
     }
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
         AccelerometerChart(
             days = days, dailyImpactCounts = dailyImpactCounts,
             hours = hours, hourlyImpactCounts = hourlyImpactCounts,
@@ -301,7 +315,10 @@ fun SensorChartsSharedState() {
 }
 
 @Composable
-fun ImpactSensitivityCanvasChart(impactSensitivityHistory: List<Float>, modifier: Modifier = Modifier) {
+fun ImpactSensitivityCanvasChart(
+    impactSensitivityHistory: List<Float>,
+    modifier: Modifier = Modifier
+) {
     val lineColor = Color(0xFF4287F4)
     val dotColor = Color(0xFFF44266)
     val textColor = Color.Black
@@ -331,11 +348,11 @@ fun ImpactSensitivityCanvasChart(impactSensitivityHistory: List<Float>, modifier
                 chartTitle,
                 titleX,
                 titleY,
-                android.graphics.Paint().apply {
+                Paint().apply {
                     color = textColor.toArgb()
                     textSize = 36f
                     isFakeBoldText = true
-                    textAlign = android.graphics.Paint.Align.CENTER
+                    textAlign = Paint.Align.CENTER
                 }
             )
             // Draw Y axis
@@ -357,7 +374,7 @@ fun ImpactSensitivityCanvasChart(impactSensitivityHistory: List<Float>, modifier
                 "${minValue}",
                 5f,
                 chartHeight,
-                android.graphics.Paint().apply {
+                Paint().apply {
                     color = textColor.toArgb()
                     textSize = 28f
                 }
@@ -366,7 +383,7 @@ fun ImpactSensitivityCanvasChart(impactSensitivityHistory: List<Float>, modifier
                 "${maxValue}",
                 5f,
                 30f,
-                android.graphics.Paint().apply {
+                Paint().apply {
                     color = textColor.toArgb()
                     textSize = 28f
                 }
@@ -375,12 +392,21 @@ fun ImpactSensitivityCanvasChart(impactSensitivityHistory: List<Float>, modifier
             if (impactSensitivityHistory.size > 1) {
                 val path = Path()
                 impactSensitivityHistory.forEachIndexed { i, value ->
-                    val x = leftPadding + i * (chartWidth / (impactSensitivityHistory.size - 1).coerceAtLeast(1))
-                    val y = chartHeight - ((value - minValue) / (maxValue - minValue).coerceAtLeast(1e-6f) * (chartHeight - 30f))
+                    val x =
+                        leftPadding + i * (chartWidth / (impactSensitivityHistory.size - 1).coerceAtLeast(
+                            1
+                        ))
+                    val y = chartHeight - ((value - minValue) / (maxValue - minValue).coerceAtLeast(
+                        1e-6f
+                    ) * (chartHeight - 30f))
                     if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
                     drawCircle(dotColor, radius = 6f, center = Offset(x, y))
                 }
-                drawPath(path, lineColor, style = Stroke(width = 4f, cap = StrokeCap.Round, join = StrokeJoin.Round))
+                drawPath(
+                    path,
+                    lineColor,
+                    style = Stroke(width = 4f, cap = StrokeCap.Round, join = StrokeJoin.Round)
+                )
             }
         }
     }
@@ -470,9 +496,13 @@ fun PeakDetectionChart(
     // Custom marker composable
     @Composable
     fun PeakMarker(hourIndex: Int): CartesianMarker {
-        val times = if (hourIndex in hourlyPeakTimes.indices) hourlyPeakTimes[hourIndex] else emptyList()
-        val label = if (times.isNotEmpty()) times.joinToString(", ") { it.toString() } else "No peaks"
-        return DefaultCartesianMarker(label = rememberTextComponent(), valueFormatter = { _, _ -> label })
+        val times =
+            if (hourIndex in hourlyPeakTimes.indices) hourlyPeakTimes[hourIndex] else emptyList()
+        val label =
+            if (times.isNotEmpty()) times.joinToString(", ") { it.toString() } else "No peaks"
+        return DefaultCartesianMarker(
+            label = rememberTextComponent(),
+            valueFormatter = { _, _ -> label })
     }
 
     Column(modifier = Modifier.fillMaxSize()) {

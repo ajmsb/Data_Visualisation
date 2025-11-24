@@ -1,5 +1,6 @@
 package com.example.practicaltrainingproject.presentation.ui.mainScreen.components
 
+import android.graphics.Paint
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -9,9 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
@@ -52,11 +51,11 @@ fun HourlyImpactChartFromState(hours: List<String>, hourlyImpactCounts: List<Int
                 chartTitle,
                 titleX,
                 titleY,
-                android.graphics.Paint().apply {
+                Paint().apply {
                     color = textColor.toArgb()
                     textSize = 36f
                     isFakeBoldText = true
-                    textAlign = android.graphics.Paint.Align.CENTER
+                    textAlign = Paint.Align.CENTER
                 }
             )
 
@@ -81,7 +80,7 @@ fun HourlyImpactChartFromState(hours: List<String>, hourlyImpactCounts: List<Int
                     "0",
                     leftPadding - 30f,
                     chartHeight,
-                    android.graphics.Paint().apply {
+                    Paint().apply {
                         color = textColor.toArgb()
                         textSize = 24f
                     }
@@ -90,7 +89,7 @@ fun HourlyImpactChartFromState(hours: List<String>, hourlyImpactCounts: List<Int
                     "$maxCount",
                     leftPadding - 35f,
                     25f,
-                    android.graphics.Paint().apply {
+                    Paint().apply {
                         color = textColor.toArgb()
                         textSize = 24f
                     }
@@ -106,7 +105,7 @@ fun HourlyImpactChartFromState(hours: List<String>, hourlyImpactCounts: List<Int
                     hours[i],
                     x - 10f,
                     chartHeight + 30f,
-                    android.graphics.Paint().apply {
+                    Paint().apply {
                         color = textColor.toArgb()
                         textSize = 20f
                     }
@@ -117,7 +116,8 @@ fun HourlyImpactChartFromState(hours: List<String>, hourlyImpactCounts: List<Int
             val path = Path()
             for (i in hourlyImpactCounts.indices) {
                 val x = leftPadding + i * stepX
-                val y = chartHeight - (hourlyImpactCounts[i].toFloat() / maxCount) * (chartHeight - 20f)
+                val y =
+                    chartHeight - (hourlyImpactCounts[i].toFloat() / maxCount) * (chartHeight - 20f)
                 if (i == 0) {
                     path.moveTo(x, y)
                 } else {
@@ -133,7 +133,8 @@ fun HourlyImpactChartFromState(hours: List<String>, hourlyImpactCounts: List<Int
             // Draw dots at each hour
             for (i in hourlyImpactCounts.indices) {
                 val x = leftPadding + i * stepX
-                val y = chartHeight - (hourlyImpactCounts[i].toFloat() / maxCount) * (chartHeight - 20f)
+                val y =
+                    chartHeight - (hourlyImpactCounts[i].toFloat() / maxCount) * (chartHeight - 20f)
                 drawCircle(
                     color = dotColor,
                     radius = 6f,

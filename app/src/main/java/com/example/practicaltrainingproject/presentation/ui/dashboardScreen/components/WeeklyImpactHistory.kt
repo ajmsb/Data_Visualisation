@@ -1,5 +1,6 @@
 package com.example.practicaltrainingproject.presentation.ui.mainScreen.components
 
+import android.graphics.Paint
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -53,11 +54,11 @@ fun WeeklyImpactChartFromState(days: List<String>, dailyImpactCounts: List<Int>)
                 chartTitle,
                 titleX,
                 titleY,
-                android.graphics.Paint().apply {
+                Paint().apply {
                     color = textColor.toArgb()
                     textSize = 36f
                     isFakeBoldText = true
-                    textAlign = android.graphics.Paint.Align.CENTER
+                    textAlign = Paint.Align.CENTER
                 }
             )
 
@@ -85,7 +86,7 @@ fun WeeklyImpactChartFromState(days: List<String>, dailyImpactCounts: List<Int>)
             // Bars and labels
             days.forEachIndexed { index, day ->
                 val falls = dailyImpactCounts.getOrNull(index) ?: 0
-                val barLeft =  index * (barWidth * 2) + barWidth * 0.5f
+                val barLeft = index * (barWidth * 2) + barWidth * 0.5f
                 val barTop = chartHeight - (falls * yScale)
                 val barBottom = chartHeight
 
@@ -102,10 +103,10 @@ fun WeeklyImpactChartFromState(days: List<String>, dailyImpactCounts: List<Int>)
                     falls.toString(),
                     barLeft + barWidth / 2,
                     barTop - 10,
-                    android.graphics.Paint().apply {
+                    Paint().apply {
                         color = textColor.toArgb()
                         textSize = 24f
-                        textAlign = android.graphics.Paint.Align.CENTER
+                        textAlign = Paint.Align.CENTER
                     }
                 )
 
@@ -114,10 +115,10 @@ fun WeeklyImpactChartFromState(days: List<String>, dailyImpactCounts: List<Int>)
                     day,
                     barLeft + barWidth / 2,
                     dayLabelY,
-                    android.graphics.Paint().apply {
+                    Paint().apply {
                         color = textColor.toArgb()
                         textSize = 24f
-                        textAlign = android.graphics.Paint.Align.CENTER
+                        textAlign = Paint.Align.CENTER
                     }
                 )
             }
