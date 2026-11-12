@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun WeeklyImpactChartFromState(days: List<String>, dailyImpactCounts: List<Int>) {
+fun WeeklyImpactChart(days: List<String>, dailyImpactCounts: List<Int>) {
     val maxCount = (dailyImpactCounts.maxOrNull() ?: 1).coerceAtLeast(1)
     val barColor = Color(0xFFF44266)
     val textColor = Color.Black

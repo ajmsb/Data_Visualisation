@@ -21,7 +21,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun HourlyImpactChartFromState(hours: List<String>, hourlyImpactCounts: List<Int>) {
+fun HourlyImpactChart(hours: List<String>, hourlyImpactCounts: List<Int>) {
     val maxCount = (hourlyImpactCounts.maxOrNull() ?: 1).coerceAtLeast(1)
     val lineColor = Color(0xFF4287F4)
     val dotColor = Color(0xFFF44266)

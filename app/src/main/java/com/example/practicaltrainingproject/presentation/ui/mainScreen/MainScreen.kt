@@ -1,66 +1,81 @@
 package com.example.practicaltrainingproject.presentation.ui.mainScreen
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.practicaltrainingproject.presentation.ui.dashboardScreen.DashboardScreen
-import com.example.practicaltrainingproject.presentation.ui.profileScreen.ProfileScreen
+import com.example.practicaltrainingproject.data.auth.AuthState
+import com.example.practicaltrainingproject.presentation.ui.components.LoadingScreen
+import com.example.practicaltrainingproject.presentation.ui.loginScreen.LoginScreen
+import com.example.practicaltrainingproject.presentation.ui.loginScreen.domain.AuthViewModel
+import com.example.practicaltrainingproject.presentation.ui.signup.SignupScreen
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
-    val currentRoute = navController.currentBackStackEntry?.destination?.route
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Sensor Data App") },
-                colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
-            )
-        },
-        bottomBar = {
-            BottomAppBar(containerColor = MaterialTheme.colorScheme.surface) {
-                Button(
-                    onClick = { navController.navigate("dashboard") },
-                    modifier = Modifier.padding(8.dp),
-                    enabled = currentRoute != "dashboard"
-                ) {
-                    Text("Dashboard")
-                }
-                Button(
-                    onClick = { navController.navigate("profile") },
-                    modifier = Modifier.padding(8.dp),
-                    enabled = currentRoute != "profile"
-                ) {
-                    Text("Profile")
+    val authViewModel: AuthViewModel = viewModel()
+    val authState by authViewModel.authState.collectAsState()
+
+    // Show loading screen during authentication process
+    if (authState is AuthState.Loading) {
+        LoadingScreen()
+        return
+    }
+
+    // Handle authentication state changes
+    LaunchedEffect(authState) {
+        when (authState) {
+            is AuthState.Authenticated -> {
+                // Navigate to main app when authenticated
+                navController.navigate("main_app") {
+                    popUpTo(0) { inclusive = true }
                 }
             }
-        }
-    ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = "dashboard",
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            composable("dashboard") {
-                DashboardScreen()
+
+            is AuthState.Unauthenticated -> {
+                // Navigate back to login when user logs out
+                navController.navigate("login") {
+                    popUpTo(0) { inclusive = true }
+                }
             }
-            composable("profile") {
-                ProfileScreen()
+
+            else -> {
+                // Handle other states (Loading, Error, etc.)
             }
         }
     }
+
+    NavHost(
+        navController = navController,
+        startDestination = "login"
+    ) {
+        // Login Screen
+        composable("login") {
+            LoginScreen(
+                authViewModel = authViewModel,
+                navController = navController
+            )
+        }
+
+        // Signup Screen
+        composable("signup") {
+            SignupScreen(
+                authViewModel = authViewModel,
+                navController = navController
+            )
+        }
+
+        // Main App Screens - This is where the shared ViewModel should be created
+        composable("main_app") {
+            MainAppContent(navController, authViewModel)
+        }
+
+        // Note: Individual screens (dashboard, fall_detection, profile, settings) are
+        // handled inside MainAppContent with a shared FallDetectionViewModel.
+        // Direct navigation to these screens is not supported at this level.
+    }
 }
-
-

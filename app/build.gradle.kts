@@ -11,7 +11,7 @@ android {
     defaultConfig {
         applicationId = "com.example.practicaltrainingproject"
         minSdk = 29
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -42,6 +42,11 @@ android {
 
 
 dependencies {
+    // Google Maps Compose
+    implementation("com.google.maps.android:maps-compose:4.3.3")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+
+    // Vico Charts - using latest version only
     val vicoVersion = "2.1.2"
     implementation("com.patrykandpatrick.vico:core:$vicoVersion")
     implementation("com.patrykandpatrick.vico:compose:$vicoVersion")
@@ -49,16 +54,23 @@ dependencies {
     implementation("com.patrykandpatrick.vico:compose-m2:$vicoVersion")
     // For Material 3 theming in Jetpack Compose.
     implementation("com.patrykandpatrick.vico:compose-m3:$vicoVersion")
-    val vicoVersion1 = "1.16.1"
-    implementation("com.patrykandpatrick.vico:core:$vicoVersion1")
-    implementation("com.patrykandpatrick.vico:compose:$vicoVersion1")
-    // For Material 2 theming in Jetpack Compose.
-    implementation("com.patrykandpatrick.vico:compose-m2:$vicoVersion1")
-    // For Material 3 theming in Jetpack Compose.
-    implementation("com.patrykandpatrick.vico:compose-m3:$vicoVersion1")
 
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1")
 
-    implementation ("androidx.datastore:datastore-preferences:1.1.1")
+    // Material Icons
+    implementation("androidx.compose.material:material-icons-extended")
+
+    // Lifecycle
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.10.0")
+
+    // Navigation
+    implementation("androidx.navigation:navigation-compose:2.9.6")
+
+    // DataStore
+    implementation("androidx.datastore:datastore-preferences:1.2.0")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -67,7 +79,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation("androidx.navigation:navigation-compose:2.7.7")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

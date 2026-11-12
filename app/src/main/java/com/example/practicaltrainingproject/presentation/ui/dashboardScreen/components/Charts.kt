@@ -74,7 +74,7 @@ import java.time.LocalTime
 import kotlin.math.sqrt
 
 @Composable
-fun SensorChartsSharedState() {
+fun Charts() {
     val owner = LocalViewModelStoreOwner.current
     val context = LocalContext.current
     if (owner == null) {
@@ -431,9 +431,9 @@ fun AccelerometerChart(
         Text("Y: $y", color = MaterialTheme.colorScheme.secondary)
         Text("Z: $z", color = MaterialTheme.colorScheme.tertiary)*/
         Spacer(modifier = Modifier.height(16.dp))
-        WeeklyImpactChartFromState(days, dailyImpactCounts)
+        WeeklyImpactChart(days, dailyImpactCounts)
         Spacer(modifier = Modifier.height(32.dp))
-        HourlyImpactChartFromState(hours, hourlyImpactCounts)
+        HourlyImpactChart(hours, hourlyImpactCounts)
         Spacer(modifier = Modifier.height(32.dp))
         Text(
             "Impact Sensitivity Chart",
